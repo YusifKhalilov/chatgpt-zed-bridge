@@ -12,7 +12,7 @@ const languageOf = (pre) => {
 const codeText = (pre) => pre.textContent || "";
 
 const lineCount = (pre) => {
-  const text = codeText(pre).trimEnd();
+  const text = (pre.innerText || codeText(pre)).trimEnd();
   return text ? text.split(/\r\n|\r|\n/).length : 0;
 };
 
@@ -105,12 +105,14 @@ const observeBlocks = () => {
   }).observe(document.documentElement, { childList: true, subtree: true, characterData: true });
 };
 
-chrome.storage.sync.get({ foldLineLimit: defaultFoldLineLimit }, ({ foldLineLimit }) => {
+scan();
+observeBlocks();
+
+chrome.storage?.sync?.get({ foldLineLimit: defaultFoldLineLimit }, ({ foldLineLimit }) => {
   setFoldLineLimit(foldLineLimit);
-  observeBlocks();
 });
 
-chrome.storage.onChanged.addListener((changes, areaName) => {
+chrome.storage?.onChanged?.addListener((changes, areaName) => {
   if (areaName === "sync" && changes.foldLineLimit) {
     setFoldLineLimit(changes.foldLineLimit.newValue);
   }
