@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>ChatGPT Zed Bridge</title>
+    <style>
+      body {
+        display: grid;
+        gap: 8px;
+        min-width: 180px;
+        margin: 12px;
+        font: 13px/1.4 system-ui, sans-serif;
+      }
+
+      input {
+        box-sizing: border-box;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <label for="fold-line-limit">Fold blocks over lines</label>
+    <input id="fold-line-limit" type="number" min="1" step="1">
+    <script src="popup.js"></script>
+  </body>
+</html>

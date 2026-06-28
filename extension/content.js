@@ -1,5 +1,7 @@
 const blocks = new WeakMap();
+const defaultFoldLineLimit = 30;
 const settledMs = 1500;
+let foldLineLimit = defaultFoldLineLimit;
 
 const languageOf = (pre) => {
   const code = pre.querySelector("code");
@@ -8,6 +10,11 @@ const languageOf = (pre) => {
 };
 
 const codeText = (pre) => pre.textContent || "";
+
+const lineCount = (pre) => {
+  const text = codeText(pre).trimEnd();
+  return text ? text.split(/\r\n|\r|\n/).length : 0;
+};
 
 const updatePanel = (state) => {
   const chars = state.text.length;
@@ -49,6 +56,7 @@ const pruneWhenSettled = (state) => {
 
 const attach = (pre) => {
   if (blocks.has(pre) || pre.closest(".cgzb-panel")) return;
+  if (lineCount(pre) <= foldLineLimit) return;
   const panel = document.createElement("div");
   const meta = document.createElement("span");
   const button = document.createElement("button");
@@ -73,14 +81,32 @@ const attach = (pre) => {
 };
 
 const scan = (root = document) => {
-  if (root.matches?.("pre")) attach(root);
-  root.querySelectorAll?.("pre").forEach(attach);
+  const target = root.nodeType === Node.TEXT_NODE ? root.parentElement : root;
+  if (target?.matches?.("pre")) attach(target);
+  target?.querySelectorAll?.("pre").forEach(attach);
 };
 
-new MutationObserver((mutations) => {
-  for (const mutation of mutations) {
-    mutation.addedNodes.forEach((node) => scan(node));
-  }
-}).observe(document.documentElement, { childList: true, subtree: true });
+const setFoldLineLimit = (value) => {
+  foldLineLimit = Math.max(1, Number(value) || defaultFoldLineLimit);
+  scan();
+};
 
-scan();
+const observeBlocks = () => {
+  new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+      mutation.addedNodes.forEach((node) => scan(node));
+      scan(mutation.target);
+    }
+  }).observe(document.documentElement, { childList: true, subtree: true, characterData: true });
+};
+
+chrome.storage.sync.get({ foldLineLimit: defaultFoldLineLimit }, ({ foldLineLimit }) => {
+  setFoldLineLimit(foldLineLimit);
+  observeBlocks();
+});
+
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName === "sync" && changes.foldLineLimit) {
+    setFoldLineLimit(changes.foldLineLimit.newValue);
+  }
+});

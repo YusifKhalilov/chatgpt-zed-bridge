@@ -31,4 +31,6 @@ tail -f ~/Library/Logs/chatgpt-zed-bridge.out.log
 
 ## Use
 
-Open `https://chatgpt.com/` and ask for code. Code blocks are hidden, pruned after they stop changing, and can be opened with `Open in Zed`.
+Open `https://chatgpt.com/` and ask for code. Code blocks over 30 lines are hidden, pruned after they stop changing, and can be opened with `Open in Zed`.
+
+Use the extension toolbar popup to change the fold line limit.

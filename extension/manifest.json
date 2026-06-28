@@ -3,6 +3,10 @@
   "name": "ChatGPT Zed Bridge",
   "version": "0.1.1",
   "description": "Collapse ChatGPT code blocks and open them in Zed.",
+  "permissions": ["storage"],
+  "action": {
+    "default_popup": "popup.html"
+  },
   "background": {
     "service_worker": "service-worker.js"
   },
