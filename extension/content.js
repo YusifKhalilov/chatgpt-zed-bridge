@@ -82,6 +82,11 @@ const attach = (pre) => {
 
 const scan = (root = document) => {
   const target = root.nodeType === Node.TEXT_NODE ? root.parentElement : root;
+  const pre = target?.closest?.("pre");
+  if (pre) {
+    attach(pre);
+    return;
+  }
   if (target?.matches?.("pre")) attach(target);
   target?.querySelectorAll?.("pre").forEach(attach);
 };
